@@ -16,8 +16,7 @@ class IndexPage extends React.Component {
         />
         <iframe
           className="carto-embedded-iframe"
-          width="100%"
-          height="100%"
+          style="width:100%; min-height:90vh; border:0; margin:0;"
           src="/.netlify/functions/proxy?site=https://dcpbuilder.carto.com/builder/27da8190-35a4-4026-b6cf-4c20bbe8923a/embed"
         />
       </Layout>
