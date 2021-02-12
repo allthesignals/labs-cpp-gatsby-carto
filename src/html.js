@@ -5,7 +5,8 @@ export default function HTML(props) {
   return (
     <html {...props.htmlAttributes}>
       <head>
-        <meta charSet="utf-8" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <meta
           name="viewport"
@@ -17,6 +18,16 @@ export default function HTML(props) {
           href="opensearch.xml"
         />
         {props.headComponents}
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/nyc-planning-style-guide@1.0.7/dist/assets/css/nyc-planning.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
+          crossorigin="anonymous"
+        />
       </head>
       <body {...props.bodyAttributes}>
         {props.preBodyComponents}
