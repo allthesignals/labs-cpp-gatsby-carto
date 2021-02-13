@@ -13,12 +13,11 @@ const Header = () => <header className="site-header" role="banner">
     <nav role="navigation" className="cell medium-shrink responsive show-for-medium hide-for-print" id="menu" data-toggler=".show-for-medium">
       <ul className="menu vertical medium-horizontal">
         <li><a href="/">Facilities</a></li>
-        <li><a href="/">Housing</a></li>
-        <li><a href="/">FairShare</a></li>
-        <li><a href="/">Utilities</a></li>
-        <li><a href="/">Gallery</a></li>
-        <li><a href="/">About</a></li>
-        <li className="external-nav-item"><a href="mailto:email@example.org">Email</a></li>
+        <li><a href="/housing">Housing</a></li>
+        <li><a href="/fairshare">FairShare</a></li>
+        <li><a href="/utilities">Utilities</a></li>
+        <li><a href="/blog">Gallery</a></li>
+        <li><a href="/about">About</a></li>
       </ul>
     </nav>
   </div>

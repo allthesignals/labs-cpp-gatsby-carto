@@ -9,9 +9,9 @@ const ALLOWED_ORIGINS = [
 
 exports.handler = async (event) => {
   const site = event.queryStringParameters && event.queryStringParameters.site
-  const { origin } = new URL(site);
+  const siteUrl = new URL(site);
 
-  if (!ALLOWED_ORIGINS.includes(origin)) {
+  if (!ALLOWED_ORIGINS.includes(siteUrl.origin)) {
     return {
       statusCode: 500,
       body: 'Origin not allowed.',
@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   }
 
   const response = await request
-    .get(site)
+    .get(site);
 
   return {
     'statusCode': 200,
