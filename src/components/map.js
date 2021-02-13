@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types";
 import DownloadMapData from "../components/downloadMapData";
+import RadiusFilter from "../components/radiusFilter";
 
 const STYLE_OVERRIDES = `
   <style type="text/css">
@@ -78,12 +79,13 @@ class Map extends React.Component {
 
     this.state = {
       initialMapState: dynamicUrl,
-      vizJSON: null,
+      mapConfig: null,
       currentState: '',
+      mapInstance: null,
     };
   }
 
-  handleChange = (event) => {
+  handleClick = (event) => {
     setTimeout(() => {
       const state = getMapState(event.view);
 
@@ -97,10 +99,10 @@ class Map extends React.Component {
 
   mapDidLoad = (event) => {
     event.persist();
-    event.target.contentWindow.addEventListener('click', this.handleChange);
+    event.target.contentWindow.addEventListener('click', this.handleClick);
 
     this.setState({
-      vizJSON: event.target.contentWindow.vizJSON,
+      mapConfig: event.target.contentWindow.vizJSON,
       currentState: getMapState(event.target.contentWindow),
     });
 
@@ -124,10 +126,13 @@ class Map extends React.Component {
           onLoad={this.mapDidLoad}
           allowFullScreen={true}
         />
-        {this.state.vizJSON && <DownloadMapData
-          vizJSON={this.state.vizJSON}
+        {this.state.mapConfig && <DownloadMapData
+          mapConfig={this.state.mapConfig}
           state={this.state.currentState}
         />}
+        <RadiusFilter
+          map={this.state.mapInstance}
+        />
       </div>
     )
   }

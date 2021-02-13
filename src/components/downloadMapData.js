@@ -2,18 +2,16 @@ import React from "react"
 import fetch from 'node-fetch';
 
 // https://dcpbuilder.carto.com/api/v3/viz/27da8190-35a4-4026-b6cf-4c20bbe8923a/analyses/a0
-const buildSqlQueryLink = (state, vizJSON) => {
-  const userName = vizJSON.datasource.user_name;
+const buildSqlQueryLink = (state, mapConfig) => {
+  const userName = mapConfig.datasource.user_name;
   const sqlApiEndpoint = `https://${userName}.carto.com/api/v2/sql?format=csv&q=`;
   let appliedFilters = '';
 
+  // this is when no filters are applied
   if (state && state.includes('widgets')) {
     const { widgets } = JSON.parse(state);
-    const vizWidgets = vizJSON.widgets;
+    const vizWidgets = mapConfig.widgets;
     const widgetIds = Object.keys(widgets);
-
-    console.log(vizJSON);
-
     const whereClause = widgetIds
       .map(id => vizWidgets.find(w => w.id === id))
       .filter(widget => widget.type === 'category')
@@ -32,7 +30,7 @@ const buildSqlQueryLink = (state, vizJSON) => {
 
 export default class DownloadMapData extends React.Component {
   render() {
-    const link = buildSqlQueryLink(this.props.state, this.props.vizJSON);
+    const link = buildSqlQueryLink(this.props.state, this.props.mapConfig);
 
     return (
       <a
