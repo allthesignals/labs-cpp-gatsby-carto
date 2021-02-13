@@ -32,7 +32,6 @@ class IndexPage extends React.Component {
   }
 
   mapDidChange = (state) => {
-    console.log(state);
     this.props.navigate(`/?state=${state}`);
   }
 
