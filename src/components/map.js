@@ -1,19 +1,35 @@
 import React from "react"
 import PropTypes from "prop-types";
+import DownloadMapData from "../components/downloadMapData";
 
-class Map extends React.Component {
-  handleChange = (event) => {
+const STYLE_OVERRIDES = `
+  <style type="text/css">
+    * {
+      border-radius: 0;
+    }
+
+    .CDB-Widget-canvasInner {
+      border-radius: 0;
+    }
+
+    .CDB-Legends-canvas {
+      left: unset;
+      right: 16px;
+    }
+
+    .CDB-Embed-tab {
+      padding: 0;
+    }
+
+    .CDB-Text {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    }
+  </style>
+`;
+
+const restyleLiveMap = (window) => {
+  try {
     setTimeout(() => {
-      const currentMapRef = event.view.location.href;
-      const statefulMapUrl = new URL(decodeURIComponent(currentMapRef));
-      const state = statefulMapUrl.searchParams.get('state');
-
-      this.props.onChange(state);
-    }, 500);
-  }
-
-  reorganize = (window) => {
-    try {
       const { document } = window;
 
       const [filtersNode] = document.getElementsByClassName('CDB-Widget-canvas');
@@ -21,49 +37,77 @@ class Map extends React.Component {
       filtersNode.parentNode.insertBefore(filtersNode, filtersNode.parentNode.firstChild);
 
       document.head.insertAdjacentHTML("beforeend", `
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-      `);
+          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+        `);
 
-      document.head.insertAdjacentHTML("beforeend", `
-        <style type="text/css">
-          * {
-            border-radius: 0;
-          }
+      document.head.insertAdjacentHTML("beforeend", STYLE_OVERRIDES);
+    }, 500);
+  } catch (e) {
+    console.log(e);
+    console.log('Something went wrong restructuring iframe!');
+  }
+}
 
-          .CDB-Widget-canvasInner {
-            border-radius: 0;
-          }
+const getMapState = (window) => {
+  const currentMapRef = window.location.href;
+  const statefulMapUrl = new URL(decodeURIComponent(currentMapRef));
 
-          .CDB-Legends-canvas {
-            left: unset;
-            right: 16px;
-          }
+  return statefulMapUrl.searchParams.get('state');
+}
 
-          .CDB-Embed-tab {
-            padding: 0;
-          }
+const constructCartoProxyUrl = (location, cartoMapUrl) => {
+  const cartoProxyEmbedUrl = `/.netlify/functions/proxy?site=${encodeURIComponent(cartoMapUrl)}`;
 
-          .CDB-Text {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-          }
-        </style>
-      `);
-    } catch (e) {
-      console.log(e);
-      console.log('Something went wrong restructuring iframe!');
-    }
+  if (!location.search.includes('state')) {
+    return cartoProxyEmbedUrl;
+  }
+
+  const dynamicFilters = decodeURIComponent(location.search.split('?state=')[1]);
+
+  return `${cartoProxyEmbedUrl}&state=${dynamicFilters}`;
+}
+
+class Map extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const dynamicUrl = constructCartoProxyUrl(
+      props.location,
+      props.url,
+    );
+
+    this.state = {
+      initialMapState: dynamicUrl,
+      vizJSON: null,
+      currentState: '',
+    };
+  }
+
+  handleChange = (event) => {
+    setTimeout(() => {
+      const state = getMapState(event.view);
+
+      this.setState({
+        currentState: state,
+      });
+
+      this.props.onChange(state);
+    }, 500);
   }
 
   mapDidLoad = (event) => {
     event.persist();
-
     event.target.contentWindow.addEventListener('click', this.handleChange);
 
-    this.reorganize(event.target.contentWindow);
+    this.setState({
+      vizJSON: event.target.contentWindow.vizJSON,
+      currentState: getMapState(event.target.contentWindow),
+    });
+
+    restyleLiveMap(event.target.contentWindow);
   }
 
   render() {
-    const { url } = this.props;
     const iframeStyle = {
       width: '100%',
       minHeight: '90vh',
@@ -72,13 +116,19 @@ class Map extends React.Component {
     };
 
     return (
-      <iframe
-        className="carto-embedded-iframe"
-        style={iframeStyle}
-        src={url}
-        onLoad={this.mapDidLoad}
-        allowFullScreen={true}
-      />
+      <div>
+        <iframe
+          className="carto-embedded-iframe"
+          style={iframeStyle}
+          src={this.state.initialMapState}
+          onLoad={this.mapDidLoad}
+          allowFullScreen={true}
+        />
+        {this.state.vizJSON && <DownloadMapData
+          vizJSON={this.state.vizJSON}
+          state={this.state.currentState}
+        />}
+      </div>
     )
   }
 }
