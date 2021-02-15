@@ -4,7 +4,7 @@ import MapPage from '../templates/map-page';
 class IndexPage extends React.Component {
   render() {
     return <MapPage
-      mapUrl='https://nycplanning.carto.com/u/dcpbuilder/builder/27da8190-35a4-4026-b6cf-4c20bbe8923a/embed'
+      mapUrl='https://nycplanning-web.carto.com/u/planninglabs/builder/eab1a602-225a-4d35-b4c3-472880801d8f/embed'
       keywords={[`capital planning`, `new york city`, `nyc`, `dcp`]}
       location={this.props.location}
       navigate={this.props.navigate}

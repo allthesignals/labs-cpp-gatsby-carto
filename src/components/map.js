@@ -30,19 +30,17 @@ const STYLE_OVERRIDES = `
 
 const restyleLiveMap = (window) => {
   try {
-    setTimeout(() => {
-      const { document } = window;
+    const { document } = window;
 
-      const [filtersNode] = document.getElementsByClassName('CDB-Widget-canvas');
+    const [filtersNode] = document.getElementsByClassName('CDB-Widget-canvas');
 
-      filtersNode.parentNode.insertBefore(filtersNode, filtersNode.parentNode.firstChild);
+    filtersNode.parentNode.insertBefore(filtersNode, filtersNode.parentNode.firstChild);
 
-      document.head.insertAdjacentHTML("beforeend", `
-          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-        `);
+    document.head.insertAdjacentHTML("beforeend", `
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+      `);
 
-      document.head.insertAdjacentHTML("beforeend", STYLE_OVERRIDES);
-    }, 500);
+    document.head.insertAdjacentHTML("beforeend", STYLE_OVERRIDES);
   } catch (e) {
     console.log(e);
     console.log('Something went wrong restructuring iframe!');
@@ -122,7 +120,9 @@ class Map extends React.Component {
         Leaflet: event.target.contentWindow.L,
       });
 
-      // disconnect when it first first — we should only need the first mutation as that
+      restyleLiveMap(event.target.contentWindow);
+
+      // disconnect when it first emits — we should only need the first mutation as that
       // is when the leaflet map is loaded
       observer.disconnect();
     });
@@ -133,8 +133,6 @@ class Map extends React.Component {
       mapConfig: event.target.contentWindow.vizJSON,
       currentState: getMapState(event.target.contentWindow),
     });
-
-    restyleLiveMap(event.target.contentWindow);
   }
 
   render() {
