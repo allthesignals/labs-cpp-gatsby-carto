@@ -57,14 +57,17 @@ const getMapState = (window) => {
 }
 
 const constructCartoProxyUrl = (location, cartoMapUrl) => {
+  // the base URL (without query params) must be encoded
   const cartoProxyEmbedUrl = `/.netlify/functions/proxy?site=${encodeURIComponent(cartoMapUrl)}`;
 
   if (!location.search.includes('state')) {
     return cartoProxyEmbedUrl;
   }
 
+  // if there are filters being passed through the parent site, they need to be decoded
   const dynamicFilters = decodeURIComponent(location.search.split('?state=')[1]);
 
+  // start with the encoded base URL and append the filters
   return `${cartoProxyEmbedUrl}&state=${dynamicFilters}`;
 }
 
@@ -78,14 +81,22 @@ class Map extends React.Component {
     );
 
     this.state = {
+      // the full embed url, including params
       initialMapState: dynamicUrl,
+
+      // the "vizjson", carto's internal configuration object.
       mapConfig: null,
+
+      // the embedded map's current "state" query parameter, which reflects map state
       currentState: '',
+
       mapInstance: null,
+
+      Leaflet: null,
     };
   }
 
-  handleClick = (event) => {
+  captureStateChange = (event) => {
     setTimeout(() => {
       const state = getMapState(event.view);
 
@@ -98,8 +109,25 @@ class Map extends React.Component {
   }
 
   mapDidLoad = (event) => {
-    event.persist();
-    event.target.contentWindow.addEventListener('click', this.handleClick);
+    event.persist(); // this some React thing — needed for using later.
+
+    // binds the click event to capture clicks which affect mapstate
+    event.target.contentWindow.addEventListener('click', this.captureStateChange);
+
+    // grabs the reliable map node for use in the mutation observer: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    const internalLeafletMap = event.target.contentWindow.document.querySelector('#map');
+    const observer = new MutationObserver((mutationsList, observer) => {
+      this.setState({
+        mapInstance: event.target.contentWindow.mapView.getNativeMap(),
+        Leaflet: event.target.contentWindow.L,
+      });
+
+      // disconnect when it first first — we should only need the first mutation as that
+      // is when the leaflet map is loaded
+      observer.disconnect();
+    });
+
+    observer.observe(internalLeafletMap, { attributes: true, childList: true, subtree: true });
 
     this.setState({
       mapConfig: event.target.contentWindow.vizJSON,
@@ -130,9 +158,10 @@ class Map extends React.Component {
           mapConfig={this.state.mapConfig}
           state={this.state.currentState}
         />}
-        <RadiusFilter
+        {this.state.mapInstance && <RadiusFilter
           map={this.state.mapInstance}
-        />
+          Leaflet={this.state.Leaflet}
+        />}
       </div>
     )
   }
