@@ -9,6 +9,15 @@ const ALLOWED_ORIGINS = [
 
 exports.handler = async (event) => {
   const site = event.queryStringParameters && event.queryStringParameters.site
+
+  if (!site) {
+    return {
+      statusCode: 500,
+      body: 'No site param.',
+      site,
+    }
+  }
+
   const siteUrl = new URL(site);
 
   if (!ALLOWED_ORIGINS.includes(siteUrl.origin)) {
