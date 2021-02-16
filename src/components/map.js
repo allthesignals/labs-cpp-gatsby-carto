@@ -54,16 +54,16 @@ const getMapState = (window) => {
   return statefulMapUrl.searchParams.get('state');
 }
 
-const constructCartoProxyUrl = (location, cartoMapUrl) => {
+const constructCartoProxyUrl = (cartoMapUrl, stateParam = '') => {
   // the base URL (without query params) must be encoded
   const cartoProxyEmbedUrl = `/.netlify/functions/proxy?site=${encodeURIComponent(cartoMapUrl)}`;
 
-  if (!location.search.includes('state')) {
+  if (!stateParam.includes('state')) {
     return cartoProxyEmbedUrl;
   }
 
   // if there are filters being passed through the parent site, they need to be decoded
-  const dynamicFilters = decodeURIComponent(location.search.split('?state=')[1]);
+  const dynamicFilters = decodeURIComponent(stateParam.split('?state=')[1]);
 
   // start with the encoded base URL and append the filters
   return `${cartoProxyEmbedUrl}&state=${dynamicFilters}`;
@@ -74,8 +74,8 @@ class Map extends React.Component {
     super(props);
 
     const dynamicUrl = constructCartoProxyUrl(
-      props.location,
       props.url,
+      props.location.search,
     );
 
     this.state = {
