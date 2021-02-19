@@ -12,7 +12,7 @@ exports.handler = async (event) => {
 
   if (!site) {
     return {
-      statusCode: 500,
+      statusCode: 200,
       body: 'No site param.',
       site,
     }

@@ -10,6 +10,7 @@ const getMapState = (window) => {
   return statefulMapUrl.searchParams.get('state');
 }
 
+
 class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -28,6 +29,8 @@ class Map extends React.Component {
   }
 
   captureStateChange = (event) => {
+    event.preventDefault();
+
     setTimeout(() => {
       const state = getMapState(event.view);
 
@@ -52,10 +55,16 @@ class Map extends React.Component {
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     // used to observe for the first mutation on the #map node
     const observer = new MutationObserver((mutationsList, observer) => {
+      const mapInstance = iframeWindow.mapView.getNativeMap();
       this.setState({
-        mapInstance: iframeWindow.mapView.getNativeMap(), // mapView is private to Carto!
+        mapInstance: mapInstance, // mapView is private to Carto!
         Leaflet: iframeWindow.L,
       });
+
+      mapInstance.on('mousedown', (ev) => {
+        ev.originalEvent.preventDefault();
+        console.log(ev);
+      })
 
       this.props.onLoad(iframeWindow);
 
@@ -75,29 +84,28 @@ class Map extends React.Component {
   render() {
     const iframeStyle = {
       width: '100%',
-      minHeight: '90vh',
+      height: '90vh',
       border: 0,
       margin: 0,
     };
 
     return (
-      <div>
         <iframe
           className="carto-embedded-iframe"
           style={iframeStyle}
           src={this.props.url}
           onLoad={this.mapDidLoad}
           allowFullScreen={true}
-        />
-        {this.state.mapConfig && <DownloadMapData
-          mapConfig={this.state.mapConfig}
-          state={this.state.currentState}
-        />}
-        {this.state.mapInstance && <RadiusFilter
-          map={this.state.mapInstance}
-          Leaflet={this.state.Leaflet}
-        />}
-      </div>
+        >
+          {this.state.mapConfig && <DownloadMapData
+            mapConfig={this.state.mapConfig}
+            state={this.state.currentState}
+          />}
+          {this.state.mapInstance && <RadiusFilter
+            map={this.state.mapInstance}
+            Leaflet={this.state.Leaflet}
+          />}
+        </iframe>
     )
   }
 }

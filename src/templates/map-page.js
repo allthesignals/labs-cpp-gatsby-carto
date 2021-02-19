@@ -25,7 +25,7 @@ const STYLE_OVERRIDES = `
 `;
 
 // I'd like this to be configurable from map-page
-const restyleLiveMap = (iframeDocument) => {
+const restyleLiveMap = async (iframeDocument) => {
   try {
     const [filtersNode] = iframeDocument.getElementsByClassName('CDB-Widget-canvas');
 
@@ -37,6 +37,8 @@ const restyleLiveMap = (iframeDocument) => {
       `);
 
     iframeDocument.head.insertAdjacentHTML("beforeend", STYLE_OVERRIDES);
+
+    console.log('is restyling');
   } catch (e) {
     console.log(e);
     console.log('Something went wrong restructuring iframe!');
@@ -70,11 +72,16 @@ class MapPage extends React.PureComponent {
 
     this.state = {
       url: combinedUrl,
+      loaded: false,
     };
   }
 
-  handleLoad = (window) => {
-    restyleLiveMap(window.document);
+  handleLoad = async (window) => {
+    await restyleLiveMap(window.document);
+
+    this.setState({
+      loaded: true,
+    });
   }
 
   mapDidChange = (state) => {
@@ -88,6 +95,7 @@ class MapPage extends React.PureComponent {
       <Layout
         location={this.props.location}
         title={this.props.siteTitle}
+        loaded={this.state.loaded}
       >
         <SEO
           title="Home"

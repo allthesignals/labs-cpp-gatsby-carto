@@ -1,0 +1,22 @@
+html {
+  width: 100%;
+  max-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body, main {
+  height: 100%;
+}
+
+#___gatsby {
+  height: 100%;
+}
+
+#gatsby-focus-wrapper {
+  height: 100%;
+}
+
+.site-header {
+  height: 10vh;
+}

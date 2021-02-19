@@ -1,42 +1,30 @@
 import React from "react"
 import styled from "styled-components"
-import Header from './header';
-
 
 
 class Layout extends React.Component {
   render() {
-    const { location, title, children } = this.props
+    const {
+      location,
+      title,
+      loaded = true,
+      children,
+    } = this.props;
     const rootPath = `${__PATH_PREFIX__}/`
     const blogPath = `${__PATH_PREFIX__}/blog/`
 
     return (
-      <Wrapper>
-        <Header/>
-        <Main>{children}</Main>
-
-        <Footer>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
-        </Footer>
-      </Wrapper>
+      <Main
+        style={{ visibility: loaded ? 'visible' : 'hidden' }}
+      >
+        {children}
+      </Main>
     )
   }
 }
 
-const Wrapper = styled.div`
-  min-height: 100vh;
-`
-
 const Main = styled.main`
-  min-height: 100vh;
-`
-
-
-const Footer = styled.footer`
-  text-align: center;
-  margin: 24px;
+  // min-height: 100vh;
 `
 
 export default Layout

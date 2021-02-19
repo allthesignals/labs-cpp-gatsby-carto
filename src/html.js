@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import Header from './components/header';
 
 export default function HTML(props) {
   return (
@@ -30,6 +31,7 @@ export default function HTML(props) {
         />
       </head>
       <body {...props.bodyAttributes}>
+        <Header />
         {props.preBodyComponents}
         <div
           key={`body`}

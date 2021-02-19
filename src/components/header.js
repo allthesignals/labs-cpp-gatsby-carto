@@ -1,5 +1,7 @@
 import React from "react"
 
+const NYCID_AUTH = `https://accounts-nonprd.nyc.gov/account/api/oauth/authorize.htm?response_type=token&client_id=cpp-staging`;
+
 const Header = () => <header className="site-header" role="banner">
   <div href="https://planninglabs.nyc/" className="labs-beta-notice hide-for-print"></div>
   <div className="grid-x grid-padding-x">
@@ -14,10 +16,10 @@ const Header = () => <header className="site-header" role="banner">
       <ul className="menu vertical medium-horizontal">
         <li><a href="/">Facilities</a></li>
         <li><a href="/housing">Housing</a></li>
-        <li><a href="/fairshare">FairShare</a></li>
+        <li><a href="/projects">Projects</a></li>
         <li><a href="/utilities">Utilities</a></li>
         <li><a href="/blog">Gallery</a></li>
-        <li><a href="/about">About</a></li>
+        <li><a href={NYCID_AUTH} target="_blank">Login</a></li>
       </ul>
     </nav>
   </div>

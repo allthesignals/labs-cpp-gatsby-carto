@@ -1,7 +1,7 @@
 import React from "react"
 import MapPage from '../templates/map-page';
 
-class IndexPage extends React.Component {
+class ProjectsPage extends React.Component {
   render() {
     return <MapPage
       mapUrl='https://nycplanning.carto.com/u/dcpbuilder/builder/27da8190-35a4-4026-b6cf-4c20bbe8923a/embed'
@@ -12,4 +12,4 @@ class IndexPage extends React.Component {
   }
 }
 
-export default IndexPage
+export default ProjectsPage
