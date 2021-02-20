@@ -10,7 +10,6 @@ export default class RadiusFilter extends React.Component {
   render() {
     return <div
       className="button"
-      style={{ position: "absolute", bottom: "64px", right: "16px" }}
       onClick={this.addRadius}
     >
       Add Radius

@@ -1,7 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types";
-import DownloadMapData from "../components/downloadMapData";
-import RadiusFilter from "../components/radiusFilter";
 
 const getMapState = (window) => {
   const currentMapRef = window.location.href;
@@ -10,74 +8,54 @@ const getMapState = (window) => {
   return statefulMapUrl.searchParams.get('state');
 }
 
-
 class Map extends React.Component {
-  constructor(props) {
-    super(props);
+  captureStateChange = (iframeWindow) => {
+    // binds the click event to capture clicks which affect mapstate
+    iframeWindow.addEventListener('click', () => {
+      setTimeout(() => {
+        const state = getMapState(iframeWindow);
 
-    this.state = {
-      // the "vizjson", carto's internal configuration object.
-      mapConfig: null,
-
-      // the embedded map's current "state" query parameter, which reflects map state
-      currentState: '',
-
-      mapInstance: null,
-
-      Leaflet: null,
-    };
+        this.props.onChange(state);
+      }, 500);
+    });
   }
 
-  captureStateChange = (event) => {
-    event.preventDefault();
+  extractMapInstance = (iframeWindow) => {
+    return new Promise((resolve) => {
+      // grabs the reliable map node for use in the mutation observer
+      const internalLeafletMap = iframeWindow.document.querySelector('#map');
 
-    setTimeout(() => {
-      const state = getMapState(event.view);
+      // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+      // used to observe for the first mutation on the #map node
+      const observer = new MutationObserver((mutationsList, observer) => {
+        const mapInstance = iframeWindow.mapView.getNativeMap();
 
-      this.setState({
-        currentState: state,
+        // disconnect when it first emits — we should only need the first mutation as that
+        // is when the leaflet map is loaded
+        observer.disconnect();
+
+        resolve({
+          mapInstance: mapInstance, // mapView is private to Carto!
+          iframeLeaflet: iframeWindow.L,
+        });
       });
 
-      this.props.onChange(state);
-    }, 500);
+      observer.observe(internalLeafletMap, { attributes: true, childList: true, subtree: true });
+    });
   }
 
-  mapDidLoad = (event) => {
+  mapDidLoad = async (event) => {
     event.persist(); // this some React thing — needed for using later.
 
     const iframeWindow = event.target.contentWindow;
-    // binds the click event to capture clicks which affect mapstate
-    iframeWindow.addEventListener('click', this.captureStateChange);
 
-    // grabs the reliable map node for use in the mutation observer
-    const internalLeafletMap = iframeWindow.document.querySelector('#map');
+    this.captureStateChange(iframeWindow);
+    const mapInstanceState = await this.extractMapInstance(iframeWindow);
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
-    // used to observe for the first mutation on the #map node
-    const observer = new MutationObserver((mutationsList, observer) => {
-      const mapInstance = iframeWindow.mapView.getNativeMap();
-      this.setState({
-        mapInstance: mapInstance, // mapView is private to Carto!
-        Leaflet: iframeWindow.L,
-      });
-
-      mapInstance.on('mousedown', (ev) => {
-        ev.originalEvent.preventDefault();
-        console.log(ev);
-      })
-
-      this.props.onLoad(iframeWindow);
-
-      // disconnect when it first emits — we should only need the first mutation as that
-      // is when the leaflet map is loaded
-      observer.disconnect();
-    });
-
-    observer.observe(internalLeafletMap, { attributes: true, childList: true, subtree: true });
-
-    this.setState({
-      mapConfig: iframeWindow.vizJSON,
+    this.props.onLoad({
       currentState: getMapState(event.target.contentWindow),
+      iframeWindow,
+      ...mapInstanceState,
     });
   }
 
@@ -90,22 +68,13 @@ class Map extends React.Component {
     };
 
     return (
-        <iframe
-          className="carto-embedded-iframe"
-          style={iframeStyle}
-          src={this.props.url}
-          onLoad={this.mapDidLoad}
-          allowFullScreen={true}
-        >
-          {this.state.mapConfig && <DownloadMapData
-            mapConfig={this.state.mapConfig}
-            state={this.state.currentState}
-          />}
-          {this.state.mapInstance && <RadiusFilter
-            map={this.state.mapInstance}
-            Leaflet={this.state.Leaflet}
-          />}
-        </iframe>
+      <iframe
+        className="carto-embedded-iframe"
+        style={iframeStyle}
+        src={this.props.url}
+        onLoad={this.mapDidLoad}
+        allowFullScreen={true}
+      />
     )
   }
 }

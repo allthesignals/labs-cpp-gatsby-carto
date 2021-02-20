@@ -2,6 +2,8 @@ import React from "react"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Map from "../components/map"
+import DownloadMapData from "../components/downloadMapData";
+import RadiusFilter from "../components/radiusFilter";
 
 // I'd like this to be configurable from map-page
 const STYLE_OVERRIDES = `
@@ -73,19 +75,26 @@ class MapPage extends React.PureComponent {
     this.state = {
       url: combinedUrl,
       loaded: false,
+      mapInstance: null,
+      iframeLeaflet: null,
+      currentState: (new URL(window.location)).searchParams.get('state'),
     };
   }
 
-  handleLoad = async (window) => {
-    await restyleLiveMap(window.document);
+  handleLoad = async ({ iframeWindow, mapInstance, iframeLeaflet }) => {
+    await restyleLiveMap(iframeWindow.document);
 
     this.setState({
       loaded: true,
+      mapInstance,
+      iframeLeaflet,
     });
   }
 
   mapDidChange = (state) => {
     const { pathname } = this.props.location;
+
+    this.setState({ currentState: state });
 
     this.props.navigate(`${pathname}?state=${state}`);
   }
@@ -106,6 +115,19 @@ class MapPage extends React.PureComponent {
           onChange={this.mapDidChange}
           onLoad={this.handleLoad}
         />
+        <div
+          className="button-group small stacked"
+          style={{ position: 'absolute', top: 0, right: 0, zIndex: 100, margin: '1em' }}
+        >
+          <DownloadMapData
+            state={this.state.currentState}
+            mapUrl={this.props.mapUrl}
+          />
+          {this.state.mapInstance && <RadiusFilter
+            map={this.state.mapInstance}
+            Leaflet={this.state.iframeLeaflet}
+          />}
+        </div>
       </Layout>
     )
   }
