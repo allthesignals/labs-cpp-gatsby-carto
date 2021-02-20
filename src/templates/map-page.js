@@ -77,7 +77,7 @@ class MapPage extends React.PureComponent {
       loaded: false,
       mapInstance: null,
       iframeLeaflet: null,
-      currentState: (new URL(window.location)).searchParams.get('state'),
+      currentState: (new URL(props.location.href)).searchParams.get('state'),
     };
   }
 
