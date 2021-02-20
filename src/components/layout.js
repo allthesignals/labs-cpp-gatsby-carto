@@ -24,7 +24,7 @@ class Layout extends React.Component {
 }
 
 const Main = styled.main`
-  // min-height: 100vh;
+  position: relative;
 `
 
 export default Layout
