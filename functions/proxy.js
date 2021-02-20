@@ -30,11 +30,19 @@ exports.handler = async (event) => {
   const response = await request
     .get(site);
 
+  const {
+    'cache-control': cacheControl,
+    'content-type': contentType,
+    'content-encoding': contentEncoding,
+    ...theRest
+  } = response.headers;
+
   return {
     'statusCode': 200,
     'headers': {
-      'Cache-Control': 'no-cache',
-      'Content-Type': 'text/html',
+      'Cache-Control': cacheControl,
+      'Content-Type': contentType,
+      ...theRest,
     },
     'body': response.text,
   }
