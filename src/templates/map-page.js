@@ -23,6 +23,14 @@ const STYLE_OVERRIDES = `
     .CDB-Text {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     }
+
+    .CDB-Widget--alert {
+      padding: 0;
+    }
+
+    .CDB-Widget--error {
+      padding: 0;
+    }
   </style>
 `;
 
