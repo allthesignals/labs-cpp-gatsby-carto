@@ -18,7 +18,6 @@ const Header = () => <header className="site-header" role="banner">
         <li><Link activeClassName="active" to="/">Facilities</Link></li>
         <li><Link activeClassName="active" to="/housing">Housing</Link></li>
         <li><Link activeClassName="active" to="/projects">Projects</Link></li>
-        <li><Link activeClassName="active" to="/utilities">Utilities</Link></li>
         <li><Link activeClassName="active" to="/blog">Gallery</Link></li>
         <li><a href={NYCID_AUTH} target="_blank">Login</a></li>
       </ul>

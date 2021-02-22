@@ -1,5 +1,7 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import styled from "styled-components"
+import { rhythm, scale } from "../utils/typography"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -16,17 +18,30 @@ class Blog extends React.Component {
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
-        <SEO title="All posts" />
-        <Bio />
-        <SearchPosts
-          posts={posts}
-          localSearchBlog={localSearchBlog}
-          navigate={navigate}
-          location={location}
-        />
-        <Link to="/">
-          <Button marginTop="85px">Go Home</Button>
-        </Link>
+        <Wrapper>
+          <div
+            style={{
+              marginLeft: `auto`,
+              marginRight: `auto`,
+              maxWidth: rhythm(24),
+              padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
+            }}
+          >
+            <main>
+              <SEO title="All posts" />
+              <Bio />
+              <SearchPosts
+                posts={posts}
+                localSearchBlog={localSearchBlog}
+                navigate={navigate}
+                location={location}
+              />
+              <Link to="/">
+                <Button marginTop="85px">Go Home</Button>
+              </Link>
+            </main>
+          </div>
+        </Wrapper>
       </Layout>
     )
   }
@@ -61,4 +76,7 @@ export const pageQuery = graphql`
       }
     }
   }
+`
+const Wrapper = styled.div`
+  min-height: 100vh;
 `
