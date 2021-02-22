@@ -4,10 +4,11 @@ import MapPage from '../templates/map-page';
 class ProjectsPage extends React.Component {
   render() {
     return <MapPage
-      mapUrl='https://nycplanning.carto.com/u/dcpbuilder/builder/27da8190-35a4-4026-b6cf-4c20bbe8923a/embed'
+      mapUrl='https://nycplanning-web.carto.com/u/planninglabs/builder/15ad2ac2-020b-45cf-926b-b8ff3cbecf6c/embed'
       keywords={[`capital planning`, `new york city`, `nyc`, `dcp`]}
       location={this.props.location}
       navigate={this.props.navigate}
+      title={'Projects'}
     />;
   }
 }

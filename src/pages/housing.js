@@ -8,6 +8,7 @@ class HousingPage extends React.Component {
       keywords={[`capital planning`, `new york city`, `nyc`, `dcp`]}
       location={this.props.location}
       navigate={this.props.navigate}
+      title={'Housing'}
     />;
   }
 }

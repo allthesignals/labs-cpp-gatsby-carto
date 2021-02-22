@@ -115,7 +115,7 @@ class MapPage extends React.PureComponent {
         loaded={this.state.loaded}
       >
         <SEO
-          title="Home"
+          title="Map"
           keywords={this.props.keywords}
         />
         <Map

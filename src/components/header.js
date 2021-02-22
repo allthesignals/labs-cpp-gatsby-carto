@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "@reach/router"
 
 const NYCID_AUTH = `https://accounts-nonprd.nyc.gov/account/api/oauth/authorize.htm?response_type=token&client_id=cpp-staging`;
 
@@ -14,11 +15,11 @@ const Header = () => <header className="site-header" role="banner">
     </div>
     <nav role="navigation" className="cell medium-shrink responsive show-for-medium hide-for-print" id="menu" data-toggler=".show-for-medium">
       <ul className="menu vertical medium-horizontal">
-        <li><a href="/">Facilities</a></li>
-        <li><a href="/housing">Housing</a></li>
-        <li><a href="/projects">Projects</a></li>
-        <li><a href="/utilities">Utilities</a></li>
-        <li><a href="/blog">Gallery</a></li>
+        <li><Link activeClassName="active" to="/">Facilities</Link></li>
+        <li><Link activeClassName="active" to="/housing">Housing</Link></li>
+        <li><Link activeClassName="active" to="/projects">Projects</Link></li>
+        <li><Link activeClassName="active" to="/utilities">Utilities</Link></li>
+        <li><Link activeClassName="active" to="/blog">Gallery</Link></li>
         <li><a href={NYCID_AUTH} target="_blank">Login</a></li>
       </ul>
     </nav>
